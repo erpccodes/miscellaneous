@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/Makkajai_Dev/src/salesTax/Main.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="salesTax.Main"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="Makkajai_Dev"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Makkajai_Dev"/>
+</launchConfiguration>

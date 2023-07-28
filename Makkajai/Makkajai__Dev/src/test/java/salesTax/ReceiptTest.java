@@ -1,0 +1,77 @@
+package salesTax;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import org.junit.Test;
+
+public class ReceiptTest {
+
+	
+	 @Test
+	    public void testInput1() {
+	        ShoppingBasket basket = new ShoppingBasket();
+	        basket.addItem(new Item("book", 12.49, true, false));
+	        basket.addItem(new Item("music CD", 14.99, false, false));
+	        basket.addItem(new Item("chocolate bar", 0.85, true, false));
+
+	        Receipt receipt = new Receipt(basket.getItems());
+	        StringBuilder expectedOutput = new StringBuilder();
+	        expectedOutput.append("book: 12.49\n");
+	        expectedOutput.append("music CD: 16.49\n");
+	        expectedOutput.append("chocolate bar: 0.85\n");
+	        expectedOutput.append("Sales Taxes: 1.50\n");
+	        expectedOutput.append("Total: 29.83\n");
+
+	        assertEquals(expectedOutput.toString(), captureReceiptOutput(receipt));
+	    }
+
+	    @Test
+	    public void testInput2() {
+	        ShoppingBasket basket = new ShoppingBasket();
+	        basket.addItem(new Item("imported box of chocolates", 10.00, true, true));
+	        basket.addItem(new Item("imported bottle of perfume", 47.50, false, true));
+
+	        Receipt receipt = new Receipt(basket.getItems());
+	        StringBuilder expectedOutput = new StringBuilder();
+	        expectedOutput.append("imported box of chocolates: 10.50\n");
+	        expectedOutput.append("imported bottle of perfume: 54.65\n");
+	        expectedOutput.append("Sales Taxes: 7.65\n");
+	        expectedOutput.append("Total: 65.15\n");
+
+	        assertEquals(expectedOutput.toString(), captureReceiptOutput(receipt));
+	    }
+
+	    @Test
+	    public void testInput3() {
+	        ShoppingBasket basket = new ShoppingBasket();
+	        basket.addItem(new Item("imported bottle of perfume", 27.99, false, true));
+	        basket.addItem(new Item("bottle of perfume", 18.99, false, false));
+	        basket.addItem(new Item("packet of headache pills", 9.75, true, false));
+	        basket.addItem(new Item("box of imported chocolates", 11.25, true, true));
+
+	        Receipt receipt = new Receipt(basket.getItems());
+	        StringBuilder expectedOutput = new StringBuilder();
+	        expectedOutput.append("imported bottle of perfume: 32.19\n");
+	        expectedOutput.append("bottle of perfume: 20.89\n");
+	        expectedOutput.append("packet of headache pills: 9.75\n");
+	        expectedOutput.append("box of imported chocolates: 11.85\n");
+	        expectedOutput.append("Sales Taxes: 6.70\n");
+	        expectedOutput.append("Total: 74.68\n");
+
+	        assertEquals(expectedOutput.toString(), captureReceiptOutput(receipt));
+	    }
+
+	    private String captureReceiptOutput(Receipt receipt) {
+	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	        PrintStream printStream = new PrintStream(outputStream);
+	        System.setOut(printStream);
+
+	        receipt.printReceipt();
+
+	        System.setOut(System.out);
+	        return outputStream.toString().replaceAll("\\r\\n", "\n");
+	    }
+}

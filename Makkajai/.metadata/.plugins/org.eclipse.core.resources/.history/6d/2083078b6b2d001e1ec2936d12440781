@@ -1,0 +1,6 @@
+package salesTax;
+
+@Test
+public class ReceiptTest {
+
+}
