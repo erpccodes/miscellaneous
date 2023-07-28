@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Category Tree</title>
+    <style>
+        /* Style to remove bullets from the list elements */
+        ul {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+  
+    <div id="output"></div>
+    <div id="treeContainer"></div>
+
+<script>
+var CategoryData = [{
+    "Id": "a0E1K00000vBcR5UAK",
+    "xs_IsParent__c": false,
+    "xs_Name__c": "Performance",
+    "xs_Parent_Dimension__c": "a0E1K00000tnWkTUAU",
+    "xs_Parent_Name__c": "Gujarat"
+}, {
+    "Id": "a0E1K00000tnWkJUAU",
+    "xs_Display_Order__c": 100,
+    "xs_IsParent__c": true,
+    "xs_Name__c": "India"
+}, {
+    "Id": "a0E1K00000tnWkTUAU",
+    "xs_Display_Order__c": 101,
+    "xs_IsParent__c": false,
+    "xs_Name__c": "Gujarat",
+    "xs_Parent_Dimension__c": "a0E1K00000tnWkJUAU",
+    "xs_Parent_Name__c": "India"
+}, {
+    "Id": "a0E1K00000tnWkUUAU",
+    "xs_Display_Order__c": 102,
+    "xs_IsParent__c": false,
+    "xs_Name__c": "Skill",
+    "xs_Parent_Dimension__c": "a0E1K00000tnWkTUAU",
+    "xs_Parent_Name__c": "Gujarat"
+}, {
+    "Id": "a0E1K00000tpbgnUAA",
+    "xs_Display_Order__c": 103,
+    "xs_IsParent__c": false,
+    "xs_Name__c": "Skill 1.1",
+    "xs_Parent_Dimension__c": "a0E1K00000tnWkUUAU",
+    "xs_Parent_Name__c": "Skill"
+}, {
+    "Id": "a0E1K00000tpbkTUAQ",
+    "xs_Display_Order__c": 104,
+    "xs_IsParent__c": false,
+    "xs_Name__c": "Skill 1.1.1",
+    "xs_Parent_Dimension__c": "a0E1K00000tpbgnUAA",
+    "xs_Parent_Name__c": "Skill 1.1"
+}, {
+
+    "Id": "a0E1K00000vBZkmUAG",
+    "xs_Display_Order__c": 105, 
+    "xs_IsParent__c": false, 
+    "xs_Name__c": "Skill 2.1",
+    "xs_Parent_Dimension__c": "a0E1K00000tnWkUUAU",
+    "xs_Parent_Name__c": "Skill"
+}, {
+
+    "Id": "a0E1K00000tpRqqUAE",
+    "xs_Display_Order__c": 200,
+    "xs_IsParent__c": true, 
+    "xs_Name__c": "Sales-Driven Planning App"
+}, {
+
+    "Id": "a0E1K00000tnWkOUAU",
+    "xs_Display_Order__c": 300,
+    "xs_IsParent__c": true,
+    "xs_Name__c": "Global Software"
+}];
+
+var selectedCategory = ['a0E1K00000tnWkJUAU'];
+
+//Start Code here....
+
+// Recursive function to display the category tree
+function displayCategoryTree(categories, parentId, indent) {
+    const children = categories.filter(cat => cat.xs_Parent_Dimension__c === parentId);
+
+    // If the category has no children, display "--Display Data"
+    if (!children.length) {
+        document.getElementById('output').innerHTML += `<pre>${indent}--Display Data</pre>`;
+    }
+
+    children.forEach(child => {
+        document.getElementById('output').innerHTML += `<pre>${indent}<span class="category-name">${child.xs_Name__c}</span></pre>`;
+        displayCategoryTree(categories, child.Id, indent + "    ");
+    });
+}
+
+// Function to build the tree data structure
+function buildTree(data, selectedIds) {
+    const tree = {};
+
+    data.forEach(node => {
+        node.children = [];
+        tree[node.Id] = node;
+    });
+
+    const topLevelNodes = [];
+    const visitedParents = new Set();
+
+    selectedIds.forEach(id => {
+        let node = tree[id];
+        while (node) {
+            if (!visitedParents.has(node.Id)) {
+                if (node.xs_IsParent__c && node.Id !== id) {
+                    topLevelNodes.unshift(node);
+                } else {
+                    tree[node.xs_Parent_Dimension__c].children.unshift(node);
+                }
+                visitedParents.add(node.Id);
+            }
+            node = tree[node.xs_Parent_Dimension__c];
+        }
+    });
+
+    return topLevelNodes.length === 1 ? topLevelNodes[0] : { "children": topLevelNodes };
+}
+
+// Function to generate HTML for the category tree
+function generateTreeHTML(node) {
+    if (!node || !node.children || node.children.length === 0) {
+        return `<li>${node.xs_Name__c}</li>`;
+    }
+
+    let childHTML = '';
+    node.children.forEach(child => {
+        childHTML += generateTreeHTML(child);
+    });
+
+    return `
+    <li>${node.xs_Name__c}
+        <ul>${childHTML}</ul>
+    </li>
+    `;
+}
+
+// Wrap the code inside an event listener to execute after DOM load
+document.addEventListener('DOMContentLoaded', function () {
+    const hasParentAndChild = selectedCategory.some(id => CategoryData.find(cat => cat.Id === id && cat.xs_IsParent__c)) &&
+                              selectedCategory.some(id => CategoryData.find(cat => cat.Id === id && !cat.xs_IsParent__c));
+
+    if (hasParentAndChild) {
+        document.getElementById('output').innerText = "Please Don't pass parent and child category at the same time.";
+    } else if (selectedCategory.some(id => CategoryData.find(cat => cat.Id === id && cat.xs_IsParent__c))) {
+        
+        // Display parent category tree
+        selectedCategory.forEach(categoryId => {
+            const parentCategory = CategoryData.find(cat => cat.Id === categoryId && cat.xs_IsParent__c);
+            if (parentCategory) {
+                document.getElementById('output').innerHTML += `<h2>Output:</h2><pre>${parentCategory.xs_Name__c}</pre>`;
+                displayCategoryTree(CategoryData, categoryId, "    ");
+            }
+        });
+    } else {
+        // Display child category tree
+        const root = buildTree(CategoryData, selectedCategory);
+        const treeHTML = generateTreeHTML(root);
+        document.getElementById('treeContainer').innerHTML = `<h2>Output:</h2><ul>${treeHTML}</ul>`;
+    }
+});
+
+</script>
+</body>
+</html>
