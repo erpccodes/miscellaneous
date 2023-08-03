@@ -1,6 +1,6 @@
 package salesTax;
 
-public class Item {
+public class Item implements Taxable{
 	  private String name;
 	    private double price;
 	    private boolean isExempt;
@@ -28,4 +28,23 @@ public class Item {
 	    public boolean isImported() {
 	        return isImported;
 	    }
+
+		@Override
+		public double calculateSalesTax() {
+			double salesTaxRate = 0.0;
+
+	        if (!isExempt) {
+	            salesTaxRate += 0.1;
+	        }
+
+	        if (isImported) {
+	            salesTaxRate += 0.05;
+	        }
+
+	        return roundUpToNearest0_05(price * salesTaxRate);
+		}
+		
+		 private double roundUpToNearest0_05(double value) {
+		        return Math.ceil(value * 20) / 20.0;
+		    }
 }
