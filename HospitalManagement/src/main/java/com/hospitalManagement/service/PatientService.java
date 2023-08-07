@@ -13,8 +13,13 @@ import com.hospitalManagement.repository.PatientRepository;
 @Service
 public class PatientService {
 
+    private PatientRepository patientRepository;
+	  
 	  @Autowired
-	    private PatientRepository patientRepository;
+	  public PatientService(PatientRepository patientRepository) {
+	      this.patientRepository = patientRepository;
+	  }
+	  
 
 	    public void admitPatient(Patient patient) {
 	        patientRepository.save(patient);
